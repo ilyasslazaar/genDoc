@@ -1,0 +1,41 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "io.novelis.gendoc.microservice",
+      "nativeLanguage": "en"
+    },
+    "jhipsterVersion": "6.1.2",
+    "applicationType": "microservice",
+    "baseName": "microservice",
+    "packageName": "io.novelis.gendoc.microservice",
+    "packageFolder": "io/novelis/gendoc/microservice",
+    "serverPort": "8081",
+    "authenticationType": "jwt",
+    "cacheProvider": "hazelcast",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": "eureka",
+    "buildTool": "maven",
+    "enableSwaggerCodegen": true,
+    "jwtSecretKey": "NTI0MWU1NGViZmE4ODczYjg5NGI3M2I1ZTUyM2ViY2RlYmVmOWVhYjIyMTJmYWUxOWNhZjA2YmI3NGRlMTc2MGE2YzEyOGEzODkxMWRmZTQyMTE5NmMyMjM4MTA1NTUxYWI5N2ZhMjNiY2EzZWQyMWQwYWU2NzU0NWU3YTBiMDM=",
+    "testFrameworks": [],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": true,
+    "clientPackageManager": "npm",
+    "nativeLanguage": "en",
+    "languages": [
+      "en",
+      "fr"
+    ],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}
