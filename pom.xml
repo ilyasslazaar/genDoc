@@ -520,6 +520,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
                     <mainClass>${start-class}</mainClass>
                     <executable>true</executable>
                     <fork>true</fork>
@@ -894,7 +895,7 @@
                                 <modelPackage>io.novelis.gendoc.microservice.web.api.model</modelPackage>
                                 <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                                 <importMappings>Problem=org.zalando.problem.Problem</importMappings>
-                                <validateSpec>true</validateSpec>
+                            <!--    <validateSpec>true</validateSpec> -->
                                 <configOptions>
                                     <delegatePattern>true</delegatePattern>
                                     <title>microservice</title>
@@ -984,6 +985,7 @@
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
+                            <!--suppress UnresolvedMavenProperty -->
                             <mainClass>${start-class}</mainClass>
                             <executable>true</executable>
                         </configuration>

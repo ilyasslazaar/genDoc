@@ -5,7 +5,8 @@
 /src/test/javascript/coverage/
 
 microservice.*
-
+/src/main/resources/generated-documents/*
+/src/main/resources/generated-documents/
 ######################
 # Node
 ######################

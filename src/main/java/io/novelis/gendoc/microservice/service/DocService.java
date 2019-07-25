@@ -1,7 +1,11 @@
 package io.novelis.gendoc.microservice.service;
 
 import io.novelis.gendoc.microservice.service.dto.DocDTO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,7 +13,21 @@ import java.util.Optional;
  * Service Interface for managing {@link io.novelis.gendoc.microservice.domain.Doc}.
  */
 public interface DocService {
+    /**
+     * Generate DOCX from the given DTO and Template using XDOCREPORT and convert it to PDF file
+     * @param docDTO document DTO
+     * @param template uploaded velocity template
+     * @return the generated PDF file
+     */
+    File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException;
 
+    /**
+     * Convert the given XDOC file to a PDF File
+     * @param docxFile DOCX file to convert
+     * @param docType   Document Type ( CV, Attestation de stage... )
+     * @return the converted PDF file
+     */
+    File convertDOCXToPDF(File docxFile, String docType);
     /**
      * Save a doc.
      *

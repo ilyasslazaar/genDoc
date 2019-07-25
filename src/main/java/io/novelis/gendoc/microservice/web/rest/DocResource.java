@@ -1,5 +1,6 @@
 package io.novelis.gendoc.microservice.web.rest;
 
+import com.google.common.io.ByteStreams;
 import io.novelis.gendoc.microservice.service.DocService;
 import io.novelis.gendoc.microservice.web.rest.errors.BadRequestAlertException;
 import io.novelis.gendoc.microservice.service.dto.DocDTO;
@@ -9,13 +10,22 @@ import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,13 +49,58 @@ public class DocResource {
         this.docService = docService;
     }
 
-    /**
-     * {@code POST  /docs} : Create a new doc.
-     *
-     * @param docDTO the docDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new docDTO, or with status {@code 400 (Bad Request)} if the doc has already an ID.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
+    @PostMapping(value = "/docs/generate",produces = MediaType.APPLICATION_PDF_VALUE)
+    public void generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template,
+                                 HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String baseUrl = String.format("%s://%s:%d/", request.getScheme(), request.getServerName(), request.getServerPort());
+        File PDFFile = docService.generateDoc(docDTO.getDTO(), template);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition",
+            String.format("attachment; filename=" + PDFFile.getName()));
+     //   response.setHeader("Content-Disposition", "attachment; filename=\""+PDFFile.getName()+"\"");
+        response.setContentLength((int) PDFFile.length());
+        InputStream in = new BufferedInputStream(new FileInputStream(PDFFile));
+
+        try {
+            FileCopyUtils.copy(in, response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+
+        } finally {
+            in.close();
+
+        }
+    }
+
+
+
+
+    @PostMapping(value = "/docs/gen",produces = MediaType.APPLICATION_PDF_VALUE)
+    public HttpEntity<byte[]> generateDocument2(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template) throws IOException {
+
+      //  String baseUrl = String.format("%s://%s:%d/", request.getScheme(), request.getServerName(), request.getServerPort());
+        File PDFFile = docService.generateDoc(docDTO.getDTO(), template);
+
+        InputStream in = new FileInputStream(PDFFile);
+
+        byte[] documentBody = ByteStreams.toByteArray(in);
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.APPLICATION_PDF);
+        header.set(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=" + PDFFile.getName());
+        header.setContentLength(documentBody.length);
+
+        return new HttpEntity<>(documentBody, header);
+
+    }
+        /**
+         * {@code POST  /docs} : Create a new doc.
+         *
+         * @param docDTO the docDTO to create.
+         * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new docDTO, or with status {@code 400 (Bad Request)} if the doc has already an ID.
+         * @throws URISyntaxException if the Location URI syntax is incorrect.
+         */
     @PostMapping("/docs")
     public ResponseEntity<DocDTO> createDoc(@Valid @RequestBody DocDTO docDTO) throws URISyntaxException {
         log.debug("REST request to save Doc : {}", docDTO);

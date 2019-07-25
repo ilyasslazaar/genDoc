@@ -1,5 +1,6 @@
 package io.novelis.gendoc.microservice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.novelis.gendoc.microservice.config.ApplicationProperties;
 import io.novelis.gendoc.microservice.config.DefaultProfileUtil;
 
@@ -14,12 +15,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.spi.TimeZoneNameProvider;
 
 @SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
@@ -29,9 +35,12 @@ public class MicroserviceApp implements InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(MicroserviceApp.class);
 
     private final Environment env;
-
     public MicroserviceApp(Environment env) {
         this.env = env;
+    }
+    @Bean
+    public ObjectMapper objectMapper(){
+        return new ObjectMapper();
     }
 
     /**

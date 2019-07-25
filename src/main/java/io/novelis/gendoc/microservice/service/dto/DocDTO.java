@@ -11,12 +11,18 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.netflix.discovery.converters.Auto;
 import io.novelis.gendoc.microservice.domain.enumeration.DocTypes;
 import io.novelis.gendoc.microservice.service.util.CustomJsonDateDeserializer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * A DTO for the {@link io.novelis.gendoc.microservice.domain.Doc} entity.
  */
+//@Service
+    @Service
 public class DocDTO<T> implements Serializable {
 
     private Long id;
@@ -31,18 +37,20 @@ public class DocDTO<T> implements Serializable {
     @JsonDeserialize(using = CustomJsonDateDeserializer.class)
     private ZonedDateTime createdAt;
 
+    private ObjectMapper objectMapper;
+
     @NotNull
     private DocTypes type;
 
     private Map<String, T> jsonMap;
-    private DocDTO<T> docDTO;
+    private DocDTO docDTO;
 
     public DocDTO(String json) throws IOException {
-        ObjectMapper objectMapper=new ObjectMapper();
+        objectMapper=new ObjectMapper();
         docDTO=objectMapper.readValue(json,DocDTO.class);
     }
     public DocDTO(){
-        jsonMap=new HashMap<>();
+        jsonMap=new  HashMap<>();
     }
 
 
@@ -55,7 +63,7 @@ public class DocDTO<T> implements Serializable {
         return jsonMap;
     }
 
-    public DocDTO<T> getDTO() {
+    public DocDTO getDTO() {
         return docDTO;
     }
 
