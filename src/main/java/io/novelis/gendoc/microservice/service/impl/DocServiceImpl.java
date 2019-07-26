@@ -1,10 +1,14 @@
 package io.novelis.gendoc.microservice.service.impl;
 
+import com.google.common.io.ByteStreams;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
+import fr.opensagres.xdocreport.document.images.ByteArrayImageProvider;
+import fr.opensagres.xdocreport.document.images.IImageProvider;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
+import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 import io.novelis.gendoc.microservice.service.DocService;
 import io.novelis.gendoc.microservice.domain.Doc;
 import io.novelis.gendoc.microservice.repository.DocRepository;
@@ -97,11 +101,24 @@ public class DocServiceImpl implements DocService {
         }
         File PDFFile=null;
         try {
+
             report= XDocReportRegistry.getRegistry().loadReport(new FileInputStream(tmpFile), TemplateEngineKind.Velocity);
             context = report.createContext();
+         FieldsMetadata metadata = new FieldsMetadata();
+
+            metadata.addFieldAsImage("signature");
+            report.setFieldsMetadata(metadata);
+
+            byte[] signature = ByteStreams.toByteArray(new FileInputStream(new File(INPUT_DIR+"signature.png")));
+            IImageProvider sign = new ByteArrayImageProvider(signature);
             context.put("doc", docDTO.getProperties());
+
+           context.put("signature", sign);
             outputFile =new File(outputFileName);
             out= new FileOutputStream(outputFile);
+            //ajout de la signature dans le document.
+
+
             report.process(context, out);
             PDFFile=convertDOCXToPDF(outputFile,docDTO.getType().toString());
             outputFile.delete();

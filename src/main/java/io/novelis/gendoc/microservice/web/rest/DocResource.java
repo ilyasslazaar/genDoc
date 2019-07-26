@@ -48,8 +48,10 @@ public class DocResource {
      * @return the generated PDF File.
      */
     @PostMapping(value = "/docs/generate",produces = MediaType.APPLICATION_PDF_VALUE)
-    public HttpEntity<byte[]>  generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template)  {
+    public HttpEntity<byte[]>  generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart MultipartFile template)  {
+
         File PDFFile;
+
         InputStream in;
         byte[] responseBody=null;
         HttpHeaders header=null;
@@ -71,6 +73,8 @@ public class DocResource {
         }
         return new HttpEntity<>(responseBody, header);
     }
+
+
         /**
          * {@code POST  /docs} : Create a new doc.
          *
