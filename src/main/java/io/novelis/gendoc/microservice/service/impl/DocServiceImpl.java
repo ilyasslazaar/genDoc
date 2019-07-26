@@ -25,6 +25,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -41,31 +44,35 @@ public class DocServiceImpl implements DocService {
 
     private final DocRepository docRepository;
     private final DocMapper docMapper;
-
     private final String OUTPUT_DIR="src/main/resources/generated-documents/";
     private final String INPUT_DIR="src/main/resources/velocity-templates/";
     private OutputStream out;
-    private LocalDateTime createdAt;
+    private ZonedDateTime createdAt;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss'Z'");
+
     public DocServiceImpl(DocRepository docRepository, DocMapper docMapper) {
         this.docRepository = docRepository;
         this.docMapper = docMapper;
     }
     /**
      * Generate DOCX from the given Template and DTO using XDOCREPORT and convert it to PDF file
-     * @param docDTO document DTO
-     * @param template uploaded velocity template
+     * @param docDTO the document DTO
+     * @param template the uploaded velocity template
      * @return the generated PDF file
      */
 
     @Override
     public File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException {
         boolean delete=false;
-        createdAt= LocalDateTime.now();
         IXDocReport report;
         IContext context;
+        File outputFile=null;
+        File tmpFile;
+
+        String formattedDateString = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(formatter);
+        createdAt=ZonedDateTime.parse(formattedDateString);
 
         String outputFileName=docDTO.getType().toString()+"_"+ createdAt +".docx";
-        File tmpFile;
 
         if(docDTO.getType().toString().equals("OTHER")){
             if(template!=null){
@@ -90,18 +97,18 @@ public class DocServiceImpl implements DocService {
         }
         File PDFFile=null;
         try {
-
             report= XDocReportRegistry.getRegistry().loadReport(new FileInputStream(tmpFile), TemplateEngineKind.Velocity);
             context = report.createContext();
             context.put("doc", docDTO.getProperties());
-            File outputFile =new File(outputFileName);
+            outputFile =new File(outputFileName);
             out= new FileOutputStream(outputFile);
             report.process(context, out);
             PDFFile=convertDOCXToPDF(outputFile,docDTO.getType().toString());
-            docDTO.setDoc(PDFFile.getPath());
-            save(docDTO);
             outputFile.delete();
 
+            docDTO.setDoc(PDFFile.getPath());
+            docDTO.setCreatedAt(createdAt);
+            save(docDTO);
         } catch (XDocReportException xdoce) {
             log.error(xdoce.getMessage());
         } catch (FileNotFoundException fnfe) {
@@ -112,12 +119,17 @@ public class DocServiceImpl implements DocService {
         finally {
             if(delete)
                 tmpFile.delete();
+            if(outputFile!=null)
+                outputFile.delete();
+
             if(out!=null) {
                 try {
                     out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+                catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+
             }
         }
         return PDFFile;
@@ -133,9 +145,8 @@ public class DocServiceImpl implements DocService {
 
     @Override
     public File convertDOCXToPDF(File docxFile, String docType) {
-        createdAt= LocalDateTime.now();
         PdfOptions options = PdfOptions.create();
-        String PDFPath="";
+        String PDFPath;
         InputStream in=null;
         File PDFFile=null;
 

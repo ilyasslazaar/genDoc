@@ -34,7 +34,7 @@ public class DocDTO<T> implements Serializable {
     private String doc;
 
     @NotNull
-    @JsonDeserialize(using = CustomJsonDateDeserializer.class)
+   //@JsonDeserialize(using = CustomJsonDateDeserializer.class)
     private ZonedDateTime createdAt;
 
     private ObjectMapper objectMapper;
@@ -98,7 +98,6 @@ public class DocDTO<T> implements Serializable {
     public ZonedDateTime getCreatedAt() {
         return createdAt;
     }
-
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
     }
