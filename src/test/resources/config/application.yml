@@ -17,15 +17,15 @@ eureka:
   client:
     enabled: false
   instance:
-    appname: microservice
-    instanceId: microservice:${spring.application.instance-id:${random.value}}
+    appname: gendoc
+    instanceId: gendoc:${spring.application.instance-id:${random.value}}
 
 spring:
   application:
-    name: microservice
+    name: gendoc
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:mem:microservice;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MULTI_THREADED=FALSE
+    url: jdbc:h2:mem:gendoc;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MULTI_THREADED=FALSE
     name:
     username:
     password:
@@ -62,13 +62,13 @@ spring:
       enabled: false
   task:
     execution:
-      thread-name-prefix: microservice-task-
+      thread-name-prefix: gendoc-task-
       pool:
         core-size: 1
         max-size: 50
         queue-capacity: 10000
     scheduling:
-      thread-name-prefix: microservice-scheduling-
+      thread-name-prefix: gendoc-scheduling-
       pool:
         size: 1
   thymeleaf:
@@ -86,7 +86,7 @@ server:
 
 jhipster:
   clientApp:
-    name: 'microserviceApp'
+    name: 'gendocApp'
   logging:
     # To test json console appender
     use-json-format: true # By default, logs are in Json format
@@ -100,7 +100,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: NTI0MWU1NGViZmE4ODczYjg5NGI3M2I1ZTUyM2ViY2RlYmVmOWVhYjIyMTJmYWUxOWNhZjA2YmI3NGRlMTc2MGE2YzEyOGEzODkxMWRmZTQyMTE5NmMyMjM4MTA1NTUxYWI5N2ZhMjNiY2EzZWQyMWQwYWU2NzU0NWU3YTBiMDM=
+        base64-secret: MjNmZTBiMDNhMjExYjVlZGQ1ZDViNzJhNGIzMDVhNTc4ZDJiNzE2YTJhYzdkMDdiYTliMGZiMjI1MTkwNzg3MzY4YjZmNTYzM2FlODY0ZWY0ODZiNTI4NGJkZjMzNzgwODZlNjBkNWIzNzVhM2Q4MzY1MDVhZDVjYTIwZTllODM=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
   metrics:

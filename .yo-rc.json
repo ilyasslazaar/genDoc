@@ -1,17 +1,17 @@
 {
   "generator-jhipster": {
     "promptValues": {
-      "packageName": "io.novelis.gendoc.microservice",
+      "packageName": "io.novelis.gendoc",
       "nativeLanguage": "en"
     },
     "jhipsterVersion": "6.1.2",
     "applicationType": "microservice",
-    "baseName": "microservice",
-    "packageName": "io.novelis.gendoc.microservice",
-    "packageFolder": "io/novelis/gendoc/microservice",
+    "baseName": "gendoc",
+    "packageName": "io.novelis.gendoc",
+    "packageFolder": "io/novelis/gendoc",
     "serverPort": "8081",
     "authenticationType": "jwt",
-    "cacheProvider": "hazelcast",
+    "cacheProvider": "ehcache",
     "enableHibernateCache": true,
     "websocket": false,
     "databaseType": "sql",
@@ -22,7 +22,7 @@
     "serviceDiscoveryType": "eureka",
     "buildTool": "maven",
     "enableSwaggerCodegen": true,
-    "jwtSecretKey": "NTI0MWU1NGViZmE4ODczYjg5NGI3M2I1ZTUyM2ViY2RlYmVmOWVhYjIyMTJmYWUxOWNhZjA2YmI3NGRlMTc2MGE2YzEyOGEzODkxMWRmZTQyMTE5NmMyMjM4MTA1NTUxYWI5N2ZhMjNiY2EzZWQyMWQwYWU2NzU0NWU3YTBiMDM=",
+    "jwtSecretKey": "MjNmZTBiMDNhMjExYjVlZGQ1ZDViNzJhNGIzMDVhNTc4ZDJiNzE2YTJhYzdkMDdiYTliMGZiMjI1MTkwNzg3MzY4YjZmNTYzM2FlODY0ZWY0ODZiNTI4NGJkZjMzNzgwODZlNjBkNWIzNzVhM2Q4MzY1MDVhZDVjYTIwZTllODM=",
     "testFrameworks": [],
     "jhiPrefix": "jhi",
     "entitySuffix": "",

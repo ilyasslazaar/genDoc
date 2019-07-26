@@ -1,18 +1,26 @@
 {
     "fluentMethods": true,
-    "clientRootFolder": "microservice",
+    "clientRootFolder": "gendoc",
     "relationships": [],
     "fields": [
         {
-            "fieldName": "email",
+            "fieldName": "doc",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
-            "fieldName": "doc",
-            "fieldType": "String",
+            "fieldName": "type",
+            "fieldType": "DocTypes",
+            "fieldValues": "ATTESTATION_DE_STAGE,ATTESTATION_DE_TRAVAIL,CV,FACTURE",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "signed",
+            "fieldType": "Boolean",
             "fieldValidateRules": [
                 "required"
             ]
@@ -23,17 +31,9 @@
             "fieldValidateRules": [
                 "required"
             ]
-        },
-        {
-            "fieldName": "type",
-            "fieldType": "DocTypes",
-            "fieldValues": "CV,ATTESTATION_STAGE,ATTESTATION_TRAVAIL,FACTURE",
-            "fieldValidateRules": [
-                "required"
-            ]
         }
     ],
-    "changelogDate": "20190716091615",
+    "changelogDate": "20190726200132",
     "dto": "mapstruct",
     "searchEngine": false,
     "service": "serviceImpl",
@@ -41,5 +41,5 @@
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,
     "pagination": "no",
-    "microserviceName": "microservice"
+    "microserviceName": "gendoc"
 }

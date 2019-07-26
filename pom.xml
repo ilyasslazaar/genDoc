@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.novelis.gendoc.microservice</groupId>
-    <artifactId>microservice</artifactId>
+    <groupId>io.novelis.gendoc</groupId>
+    <artifactId>gendoc</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Microservice</name>
+    <name>Gendoc</name>
 
     <repositories>
         <!-- TODO To remove after final JHipster release -->
@@ -204,25 +204,10 @@
 
         <!-- ************************* Added dependencies ************************* -->
 
-
-
-
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-hibernate53</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-spring</artifactId>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -272,6 +257,14 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jcache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -650,7 +643,7 @@
                             <image>adoptopenjdk:11-jre-hotspot</image>
                         </from>
                         <to>
-                            <image>microservice:latest</image>
+                            <image>gendoc:latest</image>
                         </to>
                         <container>
                             <entrypoint>
@@ -660,7 +653,6 @@
                             </entrypoint>
                             <ports>
                                 <port>8081</port>
-                                <port>5701/udp</port>
                             </ports>
                             <environment>
                                 <SPRING_OUTPUT_ANSI_ENABLED>ALWAYS</SPRING_OUTPUT_ANSI_ENABLED>
@@ -678,11 +670,11 @@
                         <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
                         <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                         <driver>org.h2.Driver</driver>
-                        <url>jdbc:h2:file:${project.build.directory}/h2db/db/microservice</url>
+                        <url>jdbc:h2:file:${project.build.directory}/h2db/db/gendoc</url>
                         <defaultSchemaName></defaultSchemaName>
-                        <username>microservice</username>
+                        <username>gendoc</username>
                         <password></password>
-                        <referenceUrl>hibernate:spring:io.novelis.gendoc.microservice.domain?dialect=org.hibernate.dialect.H2Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
+                        <referenceUrl>hibernate:spring:io.novelis.gendoc.domain?dialect=org.hibernate.dialect.H2Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                         <verbose>true</verbose>
                         <logging>debug</logging>
                         <contexts>!test</contexts>
@@ -891,14 +883,14 @@
                             <configuration>
                                 <inputSpec>${project.basedir}/src/main/resources/swagger/api.yml</inputSpec>
                                 <generatorName>spring</generatorName>
-                                <apiPackage>io.novelis.gendoc.microservice.web.api</apiPackage>
-                                <modelPackage>io.novelis.gendoc.microservice.web.api.model</modelPackage>
+                                <apiPackage>io.novelis.gendoc.web.api</apiPackage>
+                                <modelPackage>io.novelis.gendoc.web.api.model</modelPackage>
                                 <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                                 <importMappings>Problem=org.zalando.problem.Problem</importMappings>
-                            <!--    <validateSpec>true</validateSpec> -->
+
                                 <configOptions>
                                     <delegatePattern>true</delegatePattern>
-                                    <title>microservice</title>
+                                    <title>gendoc</title>
                                 </configOptions>
                             </configuration>
                         </execution>

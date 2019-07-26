@@ -1,7 +1,7 @@
 {
-  "name": "microservice",
+  "name": "gendoc",
   "version": "0.0.0",
-  "description": "Description for microservice",
+  "description": "Description for gendoc",
   "private": true,
   "license": "UNLICENSED",
   "cacheDirectories": [
