@@ -6,7 +6,7 @@
 
 microservice.*
 /src/main/resources/generated-documents/*
-/src/main/resources/generated-documents/
+!/src/main/resources/generated-documents/.gitkeep
 ######################
 # Node
 ######################
