@@ -9,6 +9,8 @@ import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
+import fr.opensagres.xdocreport.template.formatter.NullImageBehaviour;
+import io.novelis.gendoc.domain.enumeration.DocTypes;
 import io.novelis.gendoc.service.DocService;
 import io.novelis.gendoc.domain.Doc;
 import io.novelis.gendoc.repository.DocRepository;
@@ -61,22 +63,22 @@ public class DocServiceImpl implements DocService {
      * Generate DOCX from the given Template and DTO using XDOCREPORT and convert it to PDF file
      * @param docDTO the document DTO
      * @param template the uploaded velocity template
-     * @return the generated PDF file
+     * @return the generated PDF
      */
 
     @Override
     public File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException {
-
         boolean delete=false;
         IXDocReport report;
         IContext context;
-        File outputFile=null;
+        File docxFile=null;
         File tmpFile;
 
         String formattedDateString = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(formatter);
         createdAt=ZonedDateTime.parse(formattedDateString);
 
-        String outputFileName=docDTO.getType().toString()+"_"+ createdAt +".docx";
+        String docxFileName=docDTO.getType().toString()+"_"+ createdAt +".docx";
+
         if(docDTO.getType().toString().equals("OTHER")){
             if(template!=null){
                 tmpFile=new File(template.getOriginalFilename());
@@ -85,9 +87,7 @@ public class DocServiceImpl implements DocService {
                     out = new FileOutputStream(tmpFile);
                     out.write(template.getBytes());
                 }
-                catch (FileNotFoundException fnfe) {
-                    log.error(fnfe.getMessage());
-                } catch (IOException ioe) {
+                catch (IOException ioe) {
                     log.error(ioe.getMessage());
                 }
             }
@@ -100,43 +100,48 @@ public class DocServiceImpl implements DocService {
         }
         File PDFFile=null;
         try {
-
+            //Load Docx file by filling Velocity template engine and cache it to the registry.
             report= XDocReportRegistry.getRegistry().loadReport(new FileInputStream(tmpFile), TemplateEngineKind.Velocity);
+            //Create data model context .
             context = report.createContext();
+            context.put("doc",docDTO.getProperties());
+            //Configure the behaviour of the null image.
             FieldsMetadata metadata = new FieldsMetadata();
-
-            metadata.addFieldAsImage("signature");
+            metadata.addFieldAsImage( "signature", NullImageBehaviour.RemoveImageTemplate);
             report.setFieldsMetadata(metadata);
 
-            byte[] signature = ByteStreams.toByteArray(new FileInputStream(new File(INPUT_DIR+"signature.png")));
+            byte[] signature=null;
+
+            if(docDTO.isSigned())
+                signature= ByteStreams.toByteArray(new FileInputStream(new File(INPUT_DIR+"signature.JPG")));
+
             IImageProvider sign = new ByteArrayImageProvider(signature);
-            context.put("doc", docDTO.getProperties());
-
+            //Create signature image context
             context.put("signature", sign);
-            outputFile =new File(outputFileName);
-            out= new FileOutputStream(outputFile);
-            //ajout de la signature dans le document.
 
+            docxFile =new File(docxFileName);
+            out= new FileOutputStream(docxFile);
 
+            //Generate report by merging contexts with the Docx template.
             report.process(context, out);
-            PDFFile=convertDOCXToPDF(outputFile,docDTO.getType().toString());
-            outputFile.delete();
+            //converting the generated Docx to PDF
+            PDFFile=convertDOCXToPDF(docxFile,docDTO.getType().toString());
+            //delete the generated Docx file.
+            docxFile.delete();
 
             docDTO.setDoc(PDFFile.getPath());
             docDTO.setCreatedAt(createdAt);
             save(docDTO);
         } catch (XDocReportException xdoce) {
             log.error(xdoce.getMessage());
-        } catch (FileNotFoundException fnfe) {
-            log.error(fnfe.getMessage());
-        } catch (IOException ioe) {
+        }  catch (IOException ioe) {
             log.error(ioe.getMessage());
         }
         finally {
             if(delete)
                 tmpFile.delete();
-            if(outputFile!=null)
-                outputFile.delete();
+            if(docxFile!=null)
+                docxFile.delete();
 
             if(out!=null) {
                 try {
@@ -145,7 +150,6 @@ public class DocServiceImpl implements DocService {
                 catch (IOException e) {
                     log.error(e.getMessage());
                 }
-
             }
         }
         return PDFFile;
@@ -153,31 +157,27 @@ public class DocServiceImpl implements DocService {
 
 
     /**
-     * Convert the given XDOC file to a PDF File
-     * @param docxFile DOCX file to convert
+     * Convert the given DOCX file to PDF.
+     * @param docxFile the DOCX file to convert
      * @param docType   Document Type ( CV, Attestation de stage... )
-     * @return the converted PDF file
+     * @return the converted PDF.
      */
 
     @Override
     public File convertDOCXToPDF(File docxFile, String docType) {
         PdfOptions options = PdfOptions.create();
-        String PDFPath;
-        InputStream in=null;
         File PDFFile=null;
-
         try {
-            in= new FileInputStream(docxFile);
-            XWPFDocument document = new XWPFDocument(in);
-            PDFPath=OUTPUT_DIR+docType+"_"+ createdAt+".pdf";
+            //Load docx with POI XWPFDocument
+            XWPFDocument document = new XWPFDocument(new FileInputStream(docxFile));
+            String PDFPath=OUTPUT_DIR+docType+"_"+ createdAt+".pdf";
             PDFFile=new File(PDFPath);
             out = new FileOutputStream(PDFFile);
+            //Convert POI XWPFDocument to PDF
             PdfConverter.getInstance().convert(document,out,options);
-
         } catch (IOException ioe) {
             log.error(ioe.getMessage());
         }
-
         return PDFFile;
     }
 
