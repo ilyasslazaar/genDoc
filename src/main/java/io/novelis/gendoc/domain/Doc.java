@@ -29,17 +29,17 @@ public class Doc implements Serializable {
     private String doc;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private DocTypes type;
-
-    @NotNull
     @Column(name = "signed", nullable = false)
     private Boolean signed;
 
     @NotNull
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false)
+    private DocTypes type;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -61,19 +61,6 @@ public class Doc implements Serializable {
 
     public void setDoc(String doc) {
         this.doc = doc;
-    }
-
-    public DocTypes getType() {
-        return type;
-    }
-
-    public Doc type(DocTypes type) {
-        this.type = type;
-        return this;
-    }
-
-    public void setType(DocTypes type) {
-        this.type = type;
     }
 
     public Boolean isSigned() {
@@ -101,6 +88,19 @@ public class Doc implements Serializable {
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public DocTypes getType() {
+        return type;
+    }
+
+    public Doc type(DocTypes type) {
+        this.type = type;
+        return this;
+    }
+
+    public void setType(DocTypes type) {
+        this.type = type;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
@@ -124,9 +124,9 @@ public class Doc implements Serializable {
         return "Doc{" +
             "id=" + getId() +
             ", doc='" + getDoc() + "'" +
-            ", type='" + getType() + "'" +
             ", signed='" + isSigned() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
+            ", type='" + getType() + "'" +
             "}";
     }
 }

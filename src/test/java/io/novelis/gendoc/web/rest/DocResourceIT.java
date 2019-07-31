@@ -45,14 +45,14 @@ public class DocResourceIT {
     private static final String DEFAULT_DOC = "AAAAAAAAAA";
     private static final String UPDATED_DOC = "BBBBBBBBBB";
 
-    private static final DocTypes DEFAULT_TYPE = DocTypes.ATTESTATION_DE_STAGE;
-    private static final DocTypes UPDATED_TYPE = DocTypes.ATTESTATION_DE_TRAVAIL;
-
     private static final Boolean DEFAULT_SIGNED = false;
     private static final Boolean UPDATED_SIGNED = true;
 
     private static final ZonedDateTime DEFAULT_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
+
+    private static final DocTypes DEFAULT_TYPE = DocTypes.CV;
+    private static final DocTypes UPDATED_TYPE = DocTypes.ATTESTATION_DE_STAGE;
 
     @Autowired
     private DocRepository docRepository;
@@ -103,9 +103,9 @@ public class DocResourceIT {
     public static Doc createEntity(EntityManager em) {
         Doc doc = new Doc()
             .doc(DEFAULT_DOC)
-            .type(DEFAULT_TYPE)
             .signed(DEFAULT_SIGNED)
-            .createdAt(DEFAULT_CREATED_AT);
+            .createdAt(DEFAULT_CREATED_AT)
+            .type(DEFAULT_TYPE);
         return doc;
     }
     /**
@@ -117,9 +117,9 @@ public class DocResourceIT {
     public static Doc createUpdatedEntity(EntityManager em) {
         Doc doc = new Doc()
             .doc(UPDATED_DOC)
-            .type(UPDATED_TYPE)
             .signed(UPDATED_SIGNED)
-            .createdAt(UPDATED_CREATED_AT);
+            .createdAt(UPDATED_CREATED_AT)
+            .type(UPDATED_TYPE);
         return doc;
     }
 
@@ -145,9 +145,9 @@ public class DocResourceIT {
         assertThat(docList).hasSize(databaseSizeBeforeCreate + 1);
         Doc testDoc = docList.get(docList.size() - 1);
         assertThat(testDoc.getDoc()).isEqualTo(DEFAULT_DOC);
-        assertThat(testDoc.getType()).isEqualTo(DEFAULT_TYPE);
         assertThat(testDoc.isSigned()).isEqualTo(DEFAULT_SIGNED);
         assertThat(testDoc.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
+        assertThat(testDoc.getType()).isEqualTo(DEFAULT_TYPE);
     }
 
     @Test
@@ -177,25 +177,6 @@ public class DocResourceIT {
         int databaseSizeBeforeTest = docRepository.findAll().size();
         // set the field null
         doc.setDoc(null);
-
-        // Create the Doc, which fails.
-        DocDTO docDTO = docMapper.toDto(doc);
-
-        restDocMockMvc.perform(post("/api/docs")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(docDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Doc> docList = docRepository.findAll();
-        assertThat(docList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
-    public void checkTypeIsRequired() throws Exception {
-        int databaseSizeBeforeTest = docRepository.findAll().size();
-        // set the field null
-        doc.setType(null);
 
         // Create the Doc, which fails.
         DocDTO docDTO = docMapper.toDto(doc);
@@ -249,6 +230,25 @@ public class DocResourceIT {
 
     @Test
     @Transactional
+    public void checkTypeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = docRepository.findAll().size();
+        // set the field null
+        doc.setType(null);
+
+        // Create the Doc, which fails.
+        DocDTO docDTO = docMapper.toDto(doc);
+
+        restDocMockMvc.perform(post("/api/docs")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(docDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Doc> docList = docRepository.findAll();
+        assertThat(docList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllDocs() throws Exception {
         // Initialize the database
         docRepository.saveAndFlush(doc);
@@ -259,9 +259,9 @@ public class DocResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(doc.getId().intValue())))
             .andExpect(jsonPath("$.[*].doc").value(hasItem(DEFAULT_DOC.toString())))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())))
             .andExpect(jsonPath("$.[*].signed").value(hasItem(DEFAULT_SIGNED.booleanValue())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))));
+            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))))
+            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())));
     }
     
     @Test
@@ -276,9 +276,9 @@ public class DocResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.id").value(doc.getId().intValue()))
             .andExpect(jsonPath("$.doc").value(DEFAULT_DOC.toString()))
-            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()))
             .andExpect(jsonPath("$.signed").value(DEFAULT_SIGNED.booleanValue()))
-            .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)));
+            .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)))
+            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()));
     }
 
     @Test
@@ -303,9 +303,9 @@ public class DocResourceIT {
         em.detach(updatedDoc);
         updatedDoc
             .doc(UPDATED_DOC)
-            .type(UPDATED_TYPE)
             .signed(UPDATED_SIGNED)
-            .createdAt(UPDATED_CREATED_AT);
+            .createdAt(UPDATED_CREATED_AT)
+            .type(UPDATED_TYPE);
         DocDTO docDTO = docMapper.toDto(updatedDoc);
 
         restDocMockMvc.perform(put("/api/docs")
@@ -318,9 +318,9 @@ public class DocResourceIT {
         assertThat(docList).hasSize(databaseSizeBeforeUpdate);
         Doc testDoc = docList.get(docList.size() - 1);
         assertThat(testDoc.getDoc()).isEqualTo(UPDATED_DOC);
-        assertThat(testDoc.getType()).isEqualTo(UPDATED_TYPE);
         assertThat(testDoc.isSigned()).isEqualTo(UPDATED_SIGNED);
         assertThat(testDoc.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
+        assertThat(testDoc.getType()).isEqualTo(UPDATED_TYPE);
     }
 
     @Test

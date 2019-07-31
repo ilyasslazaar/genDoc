@@ -11,14 +11,6 @@
             ]
         },
         {
-            "fieldName": "type",
-            "fieldType": "DocTypes",
-            "fieldValues": "ATTESTATION_DE_STAGE,ATTESTATION_DE_TRAVAIL,CV,FACTURE",
-            "fieldValidateRules": [
-                "required"
-            ]
-        },
-        {
             "fieldName": "signed",
             "fieldType": "Boolean",
             "fieldValidateRules": [
@@ -28,6 +20,14 @@
         {
             "fieldName": "createdAt",
             "fieldType": "ZonedDateTime",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "type",
+            "fieldType": "DocTypes",
+            "fieldValues": "CV,ATTESTATION_DE_STAGE,ATTESTATION_DE_TRAVAIL,FACTURE,OTHER",
             "fieldValidateRules": [
                 "required"
             ]
