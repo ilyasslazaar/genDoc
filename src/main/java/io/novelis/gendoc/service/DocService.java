@@ -12,7 +12,6 @@ import java.util.Optional;
  * Service Interface for managing {@link io.novelis.gendoc.domain.Doc}.
  */
 public interface DocService {
-
     /**
      * Generate DOCX from the given DTO and Template using XDOCREPORT and convert it to PDF file
      * @param docDTO the document DTO
@@ -20,7 +19,6 @@ public interface DocService {
      * @return the generated PDF file
      */
     File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException;
-
     /**
      * Convert the given XDOC file to a PDF File
      * @param docxFile DOCX file to convert
@@ -28,7 +26,6 @@ public interface DocService {
      * @return the converted PDF file
      */
     File convertDOCXToPDF(File docxFile, String docType);
-
     /**
      * Save a doc.
      *

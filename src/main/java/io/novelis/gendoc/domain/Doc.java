@@ -1,4 +1,5 @@
 package io.novelis.gendoc.domain;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -7,8 +8,6 @@ import javax.validation.constraints.*;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-
-import io.novelis.gendoc.domain.enumeration.DocTypes;
 
 /**
  * A Doc.
@@ -36,10 +35,9 @@ public class Doc implements Serializable {
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
-    private DocTypes type;
+    @ManyToOne
+    @JsonIgnoreProperties("docs")
+    private Type type;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
@@ -89,16 +87,16 @@ public class Doc implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public DocTypes getType() {
+    public Type getType() {
         return type;
     }
 
-    public Doc type(DocTypes type) {
+    public Doc type(Type type) {
         this.type = type;
         return this;
     }
 
-    public void setType(DocTypes type) {
+    public void setType(Type type) {
         this.type = type;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
@@ -126,7 +124,6 @@ public class Doc implements Serializable {
             ", doc='" + getDoc() + "'" +
             ", signed='" + isSigned() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
-            ", type='" + getType() + "'" +
             "}";
     }
 }

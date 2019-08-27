@@ -35,7 +35,6 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import io.novelis.gendoc.domain.enumeration.DocTypes;
 /**
  * Integration tests for the {@Link DocResource} REST controller.
  */
@@ -50,9 +49,6 @@ public class DocResourceIT {
 
     private static final ZonedDateTime DEFAULT_CREATED_AT = ZonedDateTime.ofInstant(Instant.ofEpochMilli(0L), ZoneOffset.UTC);
     private static final ZonedDateTime UPDATED_CREATED_AT = ZonedDateTime.now(ZoneId.systemDefault()).withNano(0);
-
-    private static final DocTypes DEFAULT_TYPE = DocTypes.CV;
-    private static final DocTypes UPDATED_TYPE = DocTypes.ATTESTATION_DE_STAGE;
 
     @Autowired
     private DocRepository docRepository;
@@ -104,8 +100,7 @@ public class DocResourceIT {
         Doc doc = new Doc()
             .doc(DEFAULT_DOC)
             .signed(DEFAULT_SIGNED)
-            .createdAt(DEFAULT_CREATED_AT)
-            .type(DEFAULT_TYPE);
+            .createdAt(DEFAULT_CREATED_AT);
         return doc;
     }
     /**
@@ -118,8 +113,7 @@ public class DocResourceIT {
         Doc doc = new Doc()
             .doc(UPDATED_DOC)
             .signed(UPDATED_SIGNED)
-            .createdAt(UPDATED_CREATED_AT)
-            .type(UPDATED_TYPE);
+            .createdAt(UPDATED_CREATED_AT);
         return doc;
     }
 
@@ -147,7 +141,6 @@ public class DocResourceIT {
         assertThat(testDoc.getDoc()).isEqualTo(DEFAULT_DOC);
         assertThat(testDoc.isSigned()).isEqualTo(DEFAULT_SIGNED);
         assertThat(testDoc.getCreatedAt()).isEqualTo(DEFAULT_CREATED_AT);
-        assertThat(testDoc.getType()).isEqualTo(DEFAULT_TYPE);
     }
 
     @Test
@@ -230,25 +223,6 @@ public class DocResourceIT {
 
     @Test
     @Transactional
-    public void checkTypeIsRequired() throws Exception {
-        int databaseSizeBeforeTest = docRepository.findAll().size();
-        // set the field null
-        doc.setType(null);
-
-        // Create the Doc, which fails.
-        DocDTO docDTO = docMapper.toDto(doc);
-
-        restDocMockMvc.perform(post("/api/docs")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(docDTO)))
-            .andExpect(status().isBadRequest());
-
-        List<Doc> docList = docRepository.findAll();
-        assertThat(docList).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
-    @Transactional
     public void getAllDocs() throws Exception {
         // Initialize the database
         docRepository.saveAndFlush(doc);
@@ -260,8 +234,7 @@ public class DocResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(doc.getId().intValue())))
             .andExpect(jsonPath("$.[*].doc").value(hasItem(DEFAULT_DOC.toString())))
             .andExpect(jsonPath("$.[*].signed").value(hasItem(DEFAULT_SIGNED.booleanValue())))
-            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))))
-            .andExpect(jsonPath("$.[*].type").value(hasItem(DEFAULT_TYPE.toString())));
+            .andExpect(jsonPath("$.[*].createdAt").value(hasItem(sameInstant(DEFAULT_CREATED_AT))));
     }
     
     @Test
@@ -277,8 +250,7 @@ public class DocResourceIT {
             .andExpect(jsonPath("$.id").value(doc.getId().intValue()))
             .andExpect(jsonPath("$.doc").value(DEFAULT_DOC.toString()))
             .andExpect(jsonPath("$.signed").value(DEFAULT_SIGNED.booleanValue()))
-            .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)))
-            .andExpect(jsonPath("$.type").value(DEFAULT_TYPE.toString()));
+            .andExpect(jsonPath("$.createdAt").value(sameInstant(DEFAULT_CREATED_AT)));
     }
 
     @Test
@@ -304,8 +276,7 @@ public class DocResourceIT {
         updatedDoc
             .doc(UPDATED_DOC)
             .signed(UPDATED_SIGNED)
-            .createdAt(UPDATED_CREATED_AT)
-            .type(UPDATED_TYPE);
+            .createdAt(UPDATED_CREATED_AT);
         DocDTO docDTO = docMapper.toDto(updatedDoc);
 
         restDocMockMvc.perform(put("/api/docs")
@@ -320,7 +291,6 @@ public class DocResourceIT {
         assertThat(testDoc.getDoc()).isEqualTo(UPDATED_DOC);
         assertThat(testDoc.isSigned()).isEqualTo(UPDATED_SIGNED);
         assertThat(testDoc.getCreatedAt()).isEqualTo(UPDATED_CREATED_AT);
-        assertThat(testDoc.getType()).isEqualTo(UPDATED_TYPE);
     }
 
     @Test

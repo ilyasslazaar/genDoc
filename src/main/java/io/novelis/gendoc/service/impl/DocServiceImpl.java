@@ -10,7 +10,6 @@ import fr.opensagres.xdocreport.template.IContext;
 import fr.opensagres.xdocreport.template.TemplateEngineKind;
 import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
 import fr.opensagres.xdocreport.template.formatter.NullImageBehaviour;
-import io.novelis.gendoc.domain.enumeration.DocTypes;
 import io.novelis.gendoc.service.DocService;
 import io.novelis.gendoc.domain.Doc;
 import io.novelis.gendoc.repository.DocRepository;
@@ -53,12 +52,10 @@ public class DocServiceImpl implements DocService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss'Z'");
     private final DocMapper docMapper;
 
-
     public DocServiceImpl(DocRepository docRepository, DocMapper docMapper) {
         this.docRepository = docRepository;
         this.docMapper = docMapper;
     }
-
     /**
      * Generate DOCX from the given Template and DTO using XDOCREPORT and convert it to PDF file
      * @param docDTO the document DTO
@@ -77,9 +74,9 @@ public class DocServiceImpl implements DocService {
         String formattedDateString = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(formatter);
         createdAt=ZonedDateTime.parse(formattedDateString);
 
-        String docxFileName=docDTO.getType().toString()+"_"+ createdAt +".docx";
+        String docxFileName=docDTO.getTypeName()+"_"+ createdAt +".docx";
 
-        if(docDTO.getType().toString().equals("OTHER")){
+        if(docDTO.getTypeName().equals("OTHER")){
             if(template!=null){
                 tmpFile=new File(template.getOriginalFilename());
                 delete=true;
@@ -96,7 +93,7 @@ public class DocServiceImpl implements DocService {
             }
         }
         else{
-            tmpFile=new File(INPUT_DIR+docDTO.getType().toString()+".docx");
+            tmpFile=new File(INPUT_DIR+docDTO.getTypeName()+".docx");
         }
         File PDFFile=null;
         try {
@@ -125,7 +122,7 @@ public class DocServiceImpl implements DocService {
             //Generate report by merging contexts with the Docx template.
             report.process(context, out);
             //converting the generated Docx to PDF
-            PDFFile=convertDOCXToPDF(docxFile,docDTO.getType().toString());
+            PDFFile=convertDOCXToPDF(docxFile,docDTO.getTypeName());
             //delete the generated Docx file.
             docxFile.delete();
 
@@ -180,7 +177,6 @@ public class DocServiceImpl implements DocService {
         }
         return PDFFile;
     }
-
     /**
      * Save a doc.
      *

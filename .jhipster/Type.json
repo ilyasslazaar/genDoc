@@ -3,41 +3,33 @@
     "clientRootFolder": "gendoc",
     "relationships": [
         {
-            "relationshipName": "type",
-            "otherEntityName": "type",
-            "relationshipType": "many-to-one",
-            "otherEntityField": "name",
-            "otherEntityRelationshipName": "doc"
+            "relationshipName": "doc",
+            "otherEntityName": "doc",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "type"
         }
     ],
     "fields": [
         {
-            "fieldName": "doc",
+            "fieldName": "name",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required"
             ]
         },
         {
-            "fieldName": "signed",
-            "fieldType": "Boolean",
-            "fieldValidateRules": [
-                "required"
-            ]
-        },
-        {
-            "fieldName": "createdAt",
-            "fieldType": "ZonedDateTime",
+            "fieldName": "template",
+            "fieldType": "String",
             "fieldValidateRules": [
                 "required"
             ]
         }
     ],
-    "changelogDate": "20190726200132",
+    "changelogDate": "20190826151542",
     "dto": "mapstruct",
     "searchEngine": false,
     "service": "serviceImpl",
-    "entityTableName": "doc",
+    "entityTableName": "type",
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,
     "pagination": "no",

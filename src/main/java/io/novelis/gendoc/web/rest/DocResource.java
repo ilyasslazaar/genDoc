@@ -1,6 +1,5 @@
 package io.novelis.gendoc.web.rest;
 
-import com.google.common.io.ByteStreams;
 import io.novelis.gendoc.service.DocService;
 import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
 import io.novelis.gendoc.service.dto.DocDTO;
@@ -10,18 +9,18 @@ import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,40 +43,52 @@ public class DocResource {
     public DocResource(DocService docService) {
         this.docService = docService;
     }
+    private final String OUTPUT_DIR="src/main/resources/generated-documents/";
 
-    /**
-     * Generate a new PDF document.
-     *
-     * @param docDTO the DocDTO to generate.
-     * @param template  the velocity template.
-     * @return the generated PDF File.
-     */
-    @PostMapping(value = "/docs/generate",produces = MediaType.APPLICATION_PDF_VALUE)
-    public HttpEntity<byte[]>  generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template)  {
+    @PostMapping(value = "/docs/generate")
+    public String  generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template)  {
 
-        File PDFFile;
-        InputStream in;
-        byte[] responseBody=null;
-        HttpHeaders header=null;
+        File PDFFile=null;
+        String PDFFileName="";
+        log.debug(docDTO.toString());
         try {
             PDFFile = docService.generateDoc(docDTO.getDTO(), template);
-
-            in = new FileInputStream(PDFFile);
-            responseBody= ByteStreams.toByteArray(in);
-            header = new HttpHeaders();
-            header.setContentType(MediaType.APPLICATION_PDF);
-            header.set(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=" + PDFFile.getName());
-            header.setContentLength(responseBody.length);
-            log.debug(PDFFile.getName()+" Created ! ");
+            PDFFileName=PDFFile.getName();
         } catch (FileNotFoundException e) {
             log.error(e.getMessage());
-        } catch (IOException e) {
-            log.error(e.getMessage());
         }
-        return new HttpEntity<>(responseBody, header);
+        return PDFFileName;
     }
+    @GetMapping("/download/file/{fileName:.+}")
+    public void downloadPDFResource(HttpServletResponse response,
+                                    @PathVariable("fileName") String fileName) throws IOException {
+        InputStream inputStream;
 
+        File file = new File(OUTPUT_DIR+fileName);
+        if (file.exists()) {
+            String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+            if (mimeType == null) {
+
+                mimeType = "application/octet-stream";
+            }
+            response.setContentType(mimeType);
+            response.setHeader("Content-Disposition",
+                String.format("attachment; filename=\"" + file.getName() + "\""));
+            response.setContentLength((int) file.length());
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+
+            try {
+                FileCopyUtils.copy(inputStream, response.getOutputStream());
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            } finally {
+                inputStream.close();
+            }
+        }
+        else {
+            throw new FileNotFoundException("Fichier introuvable.");
+        }
+    }
     /**
      * {@code POST  /docs} : Create a new doc.
      *

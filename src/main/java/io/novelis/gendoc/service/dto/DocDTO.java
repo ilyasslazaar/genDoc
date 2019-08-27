@@ -1,4 +1,9 @@
 package io.novelis.gendoc.service.dto;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.poi.ss.formula.functions.T;
+
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import javax.validation.constraints.*;
@@ -6,12 +11,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.novelis.gendoc.domain.enumeration.DocTypes;
-import org.apache.poi.ss.formula.functions.T;
 
 /**
  * A DTO for the {@link io.novelis.gendoc.domain.Doc} entity.
@@ -24,16 +23,16 @@ public class DocDTO<T> implements Serializable {
     private String doc;
 
     @NotNull
-    private DocTypes type;
-
-    @NotNull
     private Boolean signed;
 
     @NotNull
     private ZonedDateTime createdAt;
 
-    private ObjectMapper objectMapper;
 
+    private Long typeId;
+
+    private String typeName;
+    private ObjectMapper objectMapper;
     private Map<String, T> jsonMap;
     private DocDTO docDTO;
 
@@ -44,7 +43,9 @@ public class DocDTO<T> implements Serializable {
     public DocDTO(){
         jsonMap=new HashMap<>();
     }
-
+    public void seDTO(DocDTO<T> docDTO) {
+        this.docDTO = docDTO;
+    }
     @JsonAnySetter
     public void setProperties(String key, T value) {
         jsonMap.put(key, value);
@@ -56,11 +57,6 @@ public class DocDTO<T> implements Serializable {
     public DocDTO getDTO() {
         return docDTO;
     }
-
-    public void seDTO(DocDTO<T> docDTO) {
-        this.docDTO = docDTO;
-    }
-
     public Long getId() {
         return id;
     }
@@ -77,15 +73,6 @@ public class DocDTO<T> implements Serializable {
         this.doc = doc;
     }
 
-
-    public DocTypes getType() {
-        return type;
-    }
-
-    public void setType(DocTypes type) {
-        this.type = type;
-    }
-
     public Boolean isSigned() {
         return signed;
     }
@@ -100,6 +87,22 @@ public class DocDTO<T> implements Serializable {
 
     public void setCreatedAt(ZonedDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Long typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 
     @Override
@@ -128,9 +131,10 @@ public class DocDTO<T> implements Serializable {
         return "DocDTO{" +
             "id=" + getId() +
             ", doc='" + getDoc() + "'" +
-            ", type='" + getType() + "'" +
             ", signed='" + isSigned() + "'" +
             ", createdAt='" + getCreatedAt() + "'" +
+            ", type=" + getTypeId() +
+            ", type='" + getTypeName() + "'" +
             "}";
     }
 }

@@ -42,6 +42,8 @@ public class CacheConfiguration {
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
             createCache(cm, io.novelis.gendoc.domain.Doc.class.getName());
+            createCache(cm, io.novelis.gendoc.domain.Type.class.getName());
+            createCache(cm, io.novelis.gendoc.domain.Type.class.getName() + ".docs");
             // jhipster-needle-ehcache-add-entry
         };
     }
