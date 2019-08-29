@@ -122,6 +122,7 @@ sudo npm start
 ## Images
 
 ![alt text](img1.png)
+![alt text](img2.png)
 
 ## License
 **Apache license 2.0**
