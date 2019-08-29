@@ -1,8 +1,8 @@
 package io.novelis.gendoc.client;
 
-import io.novelis.gendoc.security.SecurityUtils;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
+import io.novelis.gendoc.security.SecurityUtils;
 import org.springframework.stereotype.Component;
 
 @Component

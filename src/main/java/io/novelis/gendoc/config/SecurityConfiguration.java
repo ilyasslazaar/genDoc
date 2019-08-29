@@ -1,9 +1,8 @@
 package io.novelis.gendoc.config;
 
-import io.novelis.gendoc.security.*;
-import io.novelis.gendoc.security.jwt.*;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.context.annotation.Bean;
+import io.novelis.gendoc.security.AuthoritiesConstants;
+import io.novelis.gendoc.security.jwt.JWTConfigurer;
+import io.novelis.gendoc.security.jwt.TokenProvider;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
-import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 @EnableWebSecurity

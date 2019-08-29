@@ -1,7 +1,7 @@
 package io.novelis.gendoc.repository;
 
 import io.novelis.gendoc.domain.Type;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 

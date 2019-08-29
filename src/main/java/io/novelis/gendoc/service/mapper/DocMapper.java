@@ -1,9 +1,9 @@
 package io.novelis.gendoc.service.mapper;
 
-import io.novelis.gendoc.domain.*;
+import io.novelis.gendoc.domain.Doc;
 import io.novelis.gendoc.service.dto.DocDTO;
-
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 /**
  * Mapper for the entity {@link Doc} and its DTO {@link DocDTO}.

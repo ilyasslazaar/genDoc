@@ -1,34 +1,43 @@
 package io.novelis.gendoc.service.dto;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Objects;
 
 /**
  * A DTO for the {@link io.novelis.gendoc.domain.Type} entity.
  */
 public class TypeDTO implements Serializable {
+
     private Long id;
+
     private ObjectMapper objectMapper;
+
     private TypeDTO typeDTO;
+
     @NotNull
     private String name;
 
     @NotNull
     private String template;
+
     public TypeDTO(String json) throws IOException {
-        objectMapper=new ObjectMapper();
-        typeDTO=objectMapper.readValue(json,TypeDTO.class);
+        objectMapper = new ObjectMapper();
+        typeDTO = objectMapper.readValue(json, TypeDTO.class);
     }
-    public TypeDTO getDTO(){
+
+    public TypeDTO getDTO() {
         return typeDTO;
     }
-    public TypeDTO(){
 
+    public TypeDTO() {
     }
+
+    /* getters & setters */
+
     public Long getId() {
         return id;
     }

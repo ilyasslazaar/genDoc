@@ -1,7 +1,6 @@
 package io.novelis.gendoc.config.audit;
 
 import io.novelis.gendoc.domain.PersistentAuditEvent;
-
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;

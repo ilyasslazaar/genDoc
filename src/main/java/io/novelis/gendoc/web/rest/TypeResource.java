@@ -1,30 +1,23 @@
 package io.novelis.gendoc.web.rest;
 
-import io.novelis.gendoc.domain.Type;
-import io.novelis.gendoc.service.DownloadFile;
-import io.novelis.gendoc.service.TypeService;
-import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
-import io.novelis.gendoc.service.dto.TypeDTO;
-
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-import org.apache.commons.io.FileUtils;
+import io.novelis.gendoc.service.TypeService;
+import io.novelis.gendoc.service.dto.TypeDTO;
+import io.novelis.gendoc.util.DownloadFile;
+import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,7 +27,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class TypeResource {
-    private final String INPUT_DIR="src/main/resources/velocity-templates/";
+    private final String INPUT_DIR = "src/main/resources/velocity-templates/";
     private final Logger log = LoggerFactory.getLogger(TypeResource.class);
     private static final String ENTITY_NAME = "gendocType";
     @Value("${jhipster.clientApp.name}")
@@ -48,15 +41,16 @@ public class TypeResource {
 
     /**
      * create a new type.
-     * @param typeDTO the typeDTO to create
+     *
+     * @param typeDTO  the typeDTO to create
      * @param template the type template
      * @return true if the type created successfully otherwise returns false
      */
     @PostMapping(value = "/type/create")
-    public boolean createType(@RequestParam("data") TypeDTO typeDTO,@RequestPart MultipartFile template) {
-        boolean result=  typeService.saveFile(template,typeDTO.getDTO());
-        return result;
+    public boolean createType(@RequestParam("data") TypeDTO typeDTO, @RequestPart MultipartFile template) {
+        return typeService.saveFile(template, typeDTO.getDTO());
     }
+
     /**
      * {@code POST  /types} : Create a new type.
      *
@@ -99,15 +93,17 @@ public class TypeResource {
 
     /**
      * Download the template from the FS
+     *
      * @param response HttpServletResponse object
      * @param fileName File name to download
      * @throws IOException Throw IOE if the file doesn't exists in the FS
      */
     @GetMapping("/types/download/{fileName:.+}")
     public void downloadTemplateResource(HttpServletResponse response,
-                                    @PathVariable("fileName") String fileName) throws IOException {
-        DownloadFile.downloadFile(INPUT_DIR,fileName,response);
+                                         @PathVariable("fileName") String fileName) throws IOException {
+        DownloadFile.downloadFile(INPUT_DIR, fileName, response);
     }
+
     /**
      * {@code GET  /types} : get all the types.
      *

@@ -1,21 +1,22 @@
 package io.novelis.gendoc.service.impl;
 
-import io.novelis.gendoc.service.TypeService;
 import io.novelis.gendoc.domain.Type;
 import io.novelis.gendoc.repository.TypeRepository;
+import io.novelis.gendoc.service.TypeService;
 import io.novelis.gendoc.service.dto.TypeDTO;
 import io.novelis.gendoc.service.mapper.TypeMapper;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public class TypeServiceImpl implements TypeService {
 
     private final Logger log = LoggerFactory.getLogger(TypeServiceImpl.class);
-    private final String INPUT_DIR="src/main/resources/velocity-templates/";
+    private final String INPUT_DIR = "src/main/resources/velocity-templates/";
     private final TypeRepository typeRepository;
 
     private final TypeMapper typeMapper;
@@ -35,30 +36,36 @@ public class TypeServiceImpl implements TypeService {
         this.typeRepository = typeRepository;
         this.typeMapper = typeMapper;
     }
+
     /**
      * @param template .docx/.doc template file
      * @return true if the file is saved in the FS otherwise returns false.
      */
     @Override
-    public boolean saveFile(MultipartFile template,TypeDTO typeDTO) {
-        boolean result=false;
-        boolean fileNameExists=false;
-        List<TypeDTO> types=findAll();
-        for (TypeDTO type:types) {
-        if(type.getName().equals(typeDTO.getName())){
-            fileNameExists=true;
-            break;
-        }}
-        if(!fileNameExists){
-        save(typeDTO);
-        File templateFile=new File(INPUT_DIR+template.getOriginalFilename());
-        try {
-            FileUtils.writeByteArrayToFile(templateFile,template.getBytes());
-            result=true;
-        } catch (IOException e) {
-            log.error(e.getMessage());
+    public boolean saveFile(MultipartFile template, TypeDTO typeDTO) {
+        boolean result = false;
+        boolean fileNameExists = false;
+
+        List<TypeDTO> types = findAll();
+
+        for (TypeDTO type : types) {
+            if (type.getName().equals(typeDTO.getName())) {
+                fileNameExists = true;
+                break;
+            }
         }
+
+        if (!fileNameExists) {
+            save(typeDTO);
+            File templateFile = new File(INPUT_DIR + template.getOriginalFilename());
+            try {
+                FileUtils.writeByteArrayToFile(templateFile, template.getBytes());
+                result = true;
+            } catch (IOException e) {
+                log.error(e.getMessage());
+            }
         }
+
         return result;
     }
 

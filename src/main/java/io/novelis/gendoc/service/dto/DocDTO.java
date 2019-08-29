@@ -1,13 +1,12 @@
 package io.novelis.gendoc.service.dto;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.ss.formula.functions.T;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,35 +27,34 @@ public class DocDTO<T> implements Serializable {
     @NotNull
     private ZonedDateTime createdAt;
 
-
     private Long typeId;
 
     private String typeName;
+
     private ObjectMapper objectMapper;
     private Map<String, T> jsonMap;
     private DocDTO docDTO;
 
     public DocDTO(String json) throws IOException {
-        objectMapper=new ObjectMapper();
-        docDTO=objectMapper.readValue(json,DocDTO.class);
+        objectMapper = new ObjectMapper();
+        docDTO = objectMapper.readValue(json, DocDTO.class);
     }
-    public DocDTO(){
-        jsonMap=new HashMap<>();
+
+    public DocDTO() {
+        jsonMap = new HashMap<>();
     }
-    public void seDTO(DocDTO<T> docDTO) {
-        this.docDTO = docDTO;
-    }
-    @JsonAnySetter
-    public void setProperties(String key, T value) {
-        jsonMap.put(key, value);
-    }
+
+    /* getters & setters */
+
     @JsonAnyGetter
     public Map<String, T> getProperties() {
         return jsonMap;
     }
+
     public DocDTO getDTO() {
         return docDTO;
     }
+
     public Long getId() {
         return id;
     }

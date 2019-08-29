@@ -1,26 +1,24 @@
 package io.novelis.gendoc.web.rest;
 
-import io.novelis.gendoc.service.DocService;
-import io.novelis.gendoc.service.DownloadFile;
-import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
-import io.novelis.gendoc.service.dto.DocDTO;
-
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.novelis.gendoc.service.DocService;
+import io.novelis.gendoc.service.dto.DocDTO;
+import io.novelis.gendoc.util.DownloadFile;
+import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,30 +38,36 @@ public class DocResource {
     public DocResource(DocService docService) {
         this.docService = docService;
     }
-    private final String OUTPUT_DIR="src/main/resources/generated-documents/";
+
+    private final String OUTPUT_DIR = "src/main/resources/generated-documents/";
+
     @PostMapping(value = "/docs/generate")
-    public String  generateDocument(@RequestParam("data") DocDTO docDTO)  {
-        File PDFFile=null;
-        String PDFFileName="";
+    public String generateDocument(@RequestParam("data") DocDTO docDTO) {
+        File PDFFile;
+        String PDFFileName = "";
+
         try {
             PDFFile = docService.generateDoc(docDTO.getDTO());
-            PDFFileName=PDFFile.getName();
+            PDFFileName = PDFFile.getName();
         } catch (FileNotFoundException e) {
             log.error(e.getMessage());
         }
+
         return PDFFileName;
     }
+
     /**
      * Download the generated PDF File from the FS
+     *
      * @param response HttpServletResponse object
      * @param fileName File name to download
      * @throws IOException Throw IOE if the file doesn't exists in the FS
      */
     @GetMapping("/docs/download/{fileName:.+}")
-    public void downloadPDFResource(HttpServletResponse response,
-                                    @PathVariable("fileName") String fileName) throws IOException {
-        DownloadFile.downloadFile(OUTPUT_DIR,fileName,response);
+    public void downloadPDFResource(HttpServletResponse response, @PathVariable("fileName") String fileName) throws IOException {
+        DownloadFile.downloadFile(OUTPUT_DIR, fileName, response);
     }
+
     /**
      * {@code POST  /docs} : Create a new doc.
      *

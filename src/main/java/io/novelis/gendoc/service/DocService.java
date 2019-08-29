@@ -1,7 +1,6 @@
 package io.novelis.gendoc.service;
 
 import io.novelis.gendoc.service.dto.DocDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
