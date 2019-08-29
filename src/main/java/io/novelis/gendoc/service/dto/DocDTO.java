@@ -32,7 +32,9 @@ public class DocDTO<T> implements Serializable {
     private String typeName;
 
     private ObjectMapper objectMapper;
+
     private Map<String, T> jsonMap;
+
     private DocDTO docDTO;
 
     public DocDTO(String json) throws IOException {
