@@ -1,6 +1,7 @@
 package io.novelis.gendoc.web.rest;
 
 import io.novelis.gendoc.service.DocService;
+import io.novelis.gendoc.service.DownloadFile;
 import io.novelis.gendoc.web.rest.errors.BadRequestAlertException;
 import io.novelis.gendoc.service.dto.DocDTO;
 
@@ -19,7 +20,6 @@ import javax.validation.Valid;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.net.URLConnection;
 import java.util.List;
 import java.util.Optional;
@@ -32,62 +32,37 @@ import java.util.Optional;
 public class DocResource {
 
     private final Logger log = LoggerFactory.getLogger(DocResource.class);
-
     private static final String ENTITY_NAME = "gendocDoc";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
     private final DocService docService;
 
     public DocResource(DocService docService) {
         this.docService = docService;
     }
     private final String OUTPUT_DIR="src/main/resources/generated-documents/";
-
     @PostMapping(value = "/docs/generate")
-    public String  generateDocument(@RequestParam("data") DocDTO docDTO, @RequestPart(required = false) MultipartFile template)  {
-
+    public String  generateDocument(@RequestParam("data") DocDTO docDTO)  {
         File PDFFile=null;
         String PDFFileName="";
-        log.debug(docDTO.toString());
         try {
-            PDFFile = docService.generateDoc(docDTO.getDTO(), template);
+            PDFFile = docService.generateDoc(docDTO.getDTO());
             PDFFileName=PDFFile.getName();
         } catch (FileNotFoundException e) {
             log.error(e.getMessage());
         }
         return PDFFileName;
     }
-    @GetMapping("/download/file/{fileName:.+}")
+    /**
+     * Download the generated PDF File from the FS
+     * @param response HttpServletResponse object
+     * @param fileName File name to download
+     * @throws IOException Throw IOE if the file doesn't exists in the FS
+     */
+    @GetMapping("/docs/download/{fileName:.+}")
     public void downloadPDFResource(HttpServletResponse response,
                                     @PathVariable("fileName") String fileName) throws IOException {
-        InputStream inputStream;
-
-        File file = new File(OUTPUT_DIR+fileName);
-        if (file.exists()) {
-            String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-            if (mimeType == null) {
-
-                mimeType = "application/octet-stream";
-            }
-            response.setContentType(mimeType);
-            response.setHeader("Content-Disposition",
-                String.format("attachment; filename=\"" + file.getName() + "\""));
-            response.setContentLength((int) file.length());
-            inputStream = new BufferedInputStream(new FileInputStream(file));
-
-            try {
-                FileCopyUtils.copy(inputStream, response.getOutputStream());
-            } catch (IOException e) {
-                log.error(e.getMessage());
-            } finally {
-                inputStream.close();
-            }
-        }
-        else {
-            throw new FileNotFoundException("Fichier introuvable.");
-        }
+        DownloadFile.downloadFile(OUTPUT_DIR,fileName,response);
     }
     /**
      * {@code POST  /docs} : Create a new doc.

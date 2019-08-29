@@ -1,5 +1,4 @@
 package io.novelis.gendoc.service.impl;
-
 import com.google.common.io.ByteStreams;
 import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
@@ -13,18 +12,18 @@ import fr.opensagres.xdocreport.template.formatter.NullImageBehaviour;
 import io.novelis.gendoc.service.DocService;
 import io.novelis.gendoc.domain.Doc;
 import io.novelis.gendoc.repository.DocRepository;
+import io.novelis.gendoc.service.TypeService;
 import io.novelis.gendoc.service.dto.DocDTO;
+import io.novelis.gendoc.service.dto.TypeDTO;
 import io.novelis.gendoc.service.mapper.DocMapper;
 import org.apache.poi.xwpf.converter.pdf.PdfConverter;
 import org.apache.poi.xwpf.converter.pdf.PdfOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -41,9 +40,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class DocServiceImpl implements DocService {
-
+    private final TypeService typeService;
     private final Logger log = LoggerFactory.getLogger(DocServiceImpl.class);
-
     private final DocRepository docRepository;
     private final String OUTPUT_DIR="src/main/resources/generated-documents/";
     private final String INPUT_DIR="src/main/resources/velocity-templates/";
@@ -52,49 +50,29 @@ public class DocServiceImpl implements DocService {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'hh:mm:ss'Z'");
     private final DocMapper docMapper;
 
-    public DocServiceImpl(DocRepository docRepository, DocMapper docMapper) {
+    public DocServiceImpl(DocRepository docRepository, DocMapper docMapper,TypeService typeService) {
         this.docRepository = docRepository;
         this.docMapper = docMapper;
+        this.typeService = typeService;
     }
     /**
      * Generate DOCX from the given Template and DTO using XDOCREPORT and convert it to PDF file
      * @param docDTO the document DTO
-     * @param template the uploaded velocity template
      * @return the generated PDF
      */
-
     @Override
-    public File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException {
-        boolean delete=false;
+    public File generateDoc(DocDTO docDTO){
         IXDocReport report;
         IContext context;
         File docxFile=null;
-        File tmpFile;
-
+        File tmpFile=null;
+        String templateName=getTemplateName(docDTO.getTypeName());
         String formattedDateString = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("UTC")).format(formatter);
         createdAt=ZonedDateTime.parse(formattedDateString);
 
         String docxFileName=docDTO.getTypeName()+"_"+ createdAt +".docx";
 
-        if(docDTO.getTypeName().equals("OTHER")){
-            if(template!=null){
-                tmpFile=new File(template.getOriginalFilename());
-                delete=true;
-                try {
-                    out = new FileOutputStream(tmpFile);
-                    out.write(template.getBytes());
-                }
-                catch (IOException ioe) {
-                    log.error(ioe.getMessage());
-                }
-            }
-            else{
-                throw new FileNotFoundException("Template introuvable "+template);
-            }
-        }
-        else{
-            tmpFile=new File(INPUT_DIR+docDTO.getTypeName()+".docx");
-        }
+        tmpFile=new File(INPUT_DIR+templateName);
         File PDFFile=null;
         try {
             //Load Docx file by filling Velocity template engine and cache it to the registry.
@@ -115,19 +93,17 @@ public class DocServiceImpl implements DocService {
             IImageProvider sign = new ByteArrayImageProvider(signature);
             //Create signature image context
             context.put("signature", sign);
-
             docxFile =new File(docxFileName);
             out= new FileOutputStream(docxFile);
-
             //Generate report by merging contexts with the Docx template.
             report.process(context, out);
             //converting the generated Docx to PDF
             PDFFile=convertDOCXToPDF(docxFile,docDTO.getTypeName());
             //delete the generated Docx file.
             docxFile.delete();
-
-            docDTO.setDoc(PDFFile.getPath());
             docDTO.setCreatedAt(createdAt);
+            docDTO.setDoc(docDTO.getTypeName()+"_"+createdAt+".pdf");
+            docDTO.setTypeId(getTypeId(docDTO.getTypeName()));
             save(docDTO);
         } catch (XDocReportException xdoce) {
             log.error(xdoce.getMessage());
@@ -135,11 +111,8 @@ public class DocServiceImpl implements DocService {
             log.error(ioe.getMessage());
         }
         finally {
-            if(delete)
-                tmpFile.delete();
             if(docxFile!=null)
                 docxFile.delete();
-
             if(out!=null) {
                 try {
                     out.close();
@@ -176,6 +149,39 @@ public class DocServiceImpl implements DocService {
             log.error(ioe.getMessage());
         }
         return PDFFile;
+    }
+
+    /**
+     * Get the template document name from the DB.
+     * @param typeName the document type name.
+     * @return Template document name
+     */
+    public String getTemplateName(String typeName){
+        List<TypeDTO> typesList =typeService.findAll();
+        String templateName="";
+        for(TypeDTO type : typesList){
+            if(typeName.equals(type.getName())) {
+                templateName=type.getTemplate();
+                break;
+            }
+        }
+        return templateName;
+    }
+    /**
+     * Get the type id from the DB.
+     * @param typeName the document type name.
+     * @return the document type id
+     */
+    public long getTypeId(String typeName){
+        List<TypeDTO> typesList =typeService.findAll();
+        long id=0l;
+        for(TypeDTO type : typesList){
+            if(typeName.equals(type.getName())) {
+                id=type.getId();
+                break;
+            }
+        }
+        return id;
     }
     /**
      * Save a doc.

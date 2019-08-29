@@ -15,10 +15,9 @@ public interface DocService {
     /**
      * Generate DOCX from the given DTO and Template using XDOCREPORT and convert it to PDF file
      * @param docDTO the document DTO
-     * @param template the uploaded velocity template
      * @return the generated PDF file
      */
-    File generateDoc(DocDTO docDTO, MultipartFile template) throws FileNotFoundException;
+    File generateDoc(DocDTO docDTO) throws FileNotFoundException;
     /**
      * Convert the given XDOC file to a PDF File
      * @param docxFile DOCX file to convert
