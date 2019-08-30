@@ -182,9 +182,9 @@ sudo npm start
 
 #### Exemples
 
-![alt text](img0.png)
-![alt text](img1.png)
-![alt text](img2.png)
+![alt text](0.png)
+![alt text](1.png)
+![alt text](2.png)
 
 ## License
 **Apache license 2.0**
