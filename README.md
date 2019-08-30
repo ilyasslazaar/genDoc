@@ -2,7 +2,7 @@
 
 ## Présentation
 
-GenDoc est un API Micro Service pour la génération des documents utilisés au sein de Novelis :
+GenDoc est un Micro Service pour la génération des documents interne utilisés au sein de Novelis :
 * Attestation de stage, attestation de travail
 * Les CVs des collaborateurs
 * Les factures pour des clients
@@ -10,10 +10,10 @@ GenDoc est un API Micro Service pour la génération des documents utilisés au 
 
 ## Technologies
 
-* Java8/JEE, XDocReport, Jackson, Json
-* Spring (boot, rest), JHipster JDL, Swagger, Rest API, Microservice architecture
-* Reactjs, ES6, JSX, axios, boostrap4
-* docx, pdf
+* Java8/JEE, XDocReport, Jackson
+* Spring boot, JHipster JDL, Swagger
+* Reactjs, ES6, axios, boostrap4
+
 
 ## Tâches à faire
 
@@ -35,17 +35,16 @@ https://github.com/ilyasslazaar/genDoc-front
 ```
 
 ## Tester
-<<<<<<< HEAD
 
 ### GenDoc microservice
 
-GenDoc a été développé en utilisant JHipster, donc vous avez besoin de lancer un Gateway et un Registry dans la même machine/serveur pour pouvoir l'exploiter.
+GenDoc a été développé en utilisant JHipster, vous avez besoin de lancer le Gateway , Registry dans la même machine/serveur pour pouvoir l'utiliser.
 
 - Cloner ou télécharger le code source du Micro Service, puis dans un terminale, lancez :
 
 ```bash
 cd /gendoc
-sudo ./mvnw
+ ./mvnw
 ```
 
 - Vous pouvez accéder à GenDoc en visitant l'adresse suivante :
@@ -200,7 +199,6 @@ https://github.com/ilyasslazaar/genDoc-front
 ```
 - Dans un terminale, installer les composants requis pour le fonctionnement de l'app Reactjs :
 
->>>>>>> 3bf5d5454462eb36b5498ea65272e902b643cd69
 ```bash
 cd /genDoc-front
 
@@ -234,18 +232,11 @@ sudo npm start
 127.0.0.1:3000/show-docs
 ```
 
-<<<<<<< HEAD
-## Images
 
-![alt text](img1.png)
-![alt text](img2.png)
 =======
 #### Exemples
 
 ![alt text](0.png)
 ![alt text](1.png)
 ![alt text](2.png)
->>>>>>> 3bf5d5454462eb36b5498ea65272e902b643cd69
 
-## License
-**Apache license 2.0**
