@@ -199,7 +199,6 @@ https://github.com/ilyasslazaar/genDoc-front
 ```
 - Dans un terminale, installer les composants requis pour le fonctionnement de l'app Reactjs :
 
->>>>>>> 3bf5d5454462eb36b5498ea65272e902b643cd69
 ```bash
 cd /genDoc-front
 
