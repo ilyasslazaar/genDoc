@@ -38,6 +38,8 @@ https://github.com/ilyasslazaar/genDoc-front
 
 ### GenDoc microservice
 
+#### Présentation
+
 GenDoc a été développé en utilisant JHipster, donc vous avez besoin de lancer un Gateway et un Registry dans la même machine/serveur pour pouvoir l'exploiter.
 
 - Cloner ou télécharger le code source du Micro Service, puis dans un terminale, lancez :
@@ -74,8 +76,57 @@ sudo ./mvnw
 - les méthodes REST du model 'Doc'
 - les méthodes REST du model 'Type'
 ```
+#### Exemples
+
+- Pour générer un document en utilisant une requette HTTP, envoyez une requette POST :
+```bash
+url: http://127.0.0.1:8081/api/docs/generate
+auth: #fournit par serveur
+request:
+    data: 
+{
+    "signed": true,
+    "typeName": "Attestation de travail",
+    "data": {
+    "lieuLivraison": "Oujda",
+    "dateLivraison": "25 Mai 2020",
+    "responsable": {
+      "civilite": "Monsieur",
+      "nom": "Tom",
+      "prenom": "Cat",
+      "fonction": "Directeur",
+      "societe": "SOCIETE X"
+    },
+    "collaborateur": {
+      "civilite": "Monsieur",
+      "nom": "Jeery",
+      "prenom": "Terry",
+      "cin": "F92929",
+      "cnss": "2299002991",
+      "poste": "Ingénieur d'étude et développement",
+      "dateDebut": "Avril 2017"
+    }
+    }
+}
+```
+
+- Pour créer une nouvelle template d'un type de document :
+
+```bash
+# Suivez ce tutoriel officiel pour pouvoir créer une template docx
+https://github.com/opensagres/xdocreport/wiki/Overview
+```
+
+- Pour ajouter une nouvelle signature :
+
+```bash
+# Modifier l'image `signature.jpg` dans GenDoc
+cd /gendoc/src/main/resources/velocity-templates/signature.jpg
+```
 
 ### GenDoc UI
+
+#### Présentation
 
 Pour explorer l'interface utilisateur de GenDoc (reactjs) :
 
@@ -119,7 +170,7 @@ sudo npm start
 127.0.0.1:3000/show-docs
 ```
 
-## Images
+#### Exemples
 
 ![alt text](img1.png)
 ![alt text](img2.png)
