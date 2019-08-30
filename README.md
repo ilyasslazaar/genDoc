@@ -115,7 +115,17 @@ request:
 ```bash
 # Suivez ce tutoriel officiel pour pouvoir créer une template docx
 https://github.com/opensagres/xdocreport/wiki/Overview
+
+# Pour les tags de velocity qui seront remplacé par les données fournit en JSON
+# de façon que les sous-données de `data` dans JSON, seront utilisées de cette façon
+# par exemple :
+$doc.data.responsable.prenom
+# Cette expression retourne "Cat" après la génération du document
 ```
+
+- Exemple de template 'docx' :
+
+![alt text](img3.png)
 
 - Pour ajouter une nouvelle signature :
 
@@ -172,6 +182,7 @@ sudo npm start
 
 #### Exemples
 
+![alt text](img0.png)
 ![alt text](img1.png)
 ![alt text](img2.png)
 
