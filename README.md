@@ -232,18 +232,11 @@ sudo npm start
 127.0.0.1:3000/show-docs
 ```
 
-<<<<<<< HEAD
-## Images
 
-![alt text](img1.png)
-![alt text](img2.png)
 =======
 #### Exemples
 
 ![alt text](0.png)
 ![alt text](1.png)
 ![alt text](2.png)
->>>>>>> 3bf5d5454462eb36b5498ea65272e902b643cd69
 
-## License
-**Apache license 2.0**
